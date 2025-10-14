@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		756070722E92F8BF00D99E0F /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 756070712E92F8BF00D99E0F /* SQLite */; };
-		75960C7D2E92C2F800C1B5AD /* TOS.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 75960C7C2E92C2F800C1B5AD /* TOS.pdf */; };
 		7597B62D2E9BDCA200D4AC84 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 7597B62C2E9BDCA200D4AC84 /* SQLite */; };
 		7597B6352E9C171100D4AC84 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 7597B6342E9C170700D4AC84 /* .gitignore */; };
 		75C254E32E9BDC6700F6EEA8 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 75C254E22E9BDC6700F6EEA8 /* SQLite */; };
@@ -16,7 +15,6 @@
 
 /* Begin PBXFileReference section */
 		75960AF32E9142CA00C1B5AD /* ReaderLab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ReaderLab.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		75960C7C2E92C2F800C1B5AD /* TOS.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = TOS.pdf; sourceTree = "<group>"; };
 		7597B6342E9C170700D4AC84 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -55,7 +53,6 @@
 				7597B6342E9C170700D4AC84 /* .gitignore */,
 				75960AF52E9142CA00C1B5AD /* ReaderLab */,
 				75960AF42E9142CA00C1B5AD /* Products */,
-				75960C7C2E92C2F800C1B5AD /* TOS.pdf */,
 				756070752E92FFD900D99E0F /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -134,7 +131,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7597B6352E9C171100D4AC84 /* .gitignore in Resources */,
-				75960C7D2E92C2F800C1B5AD /* TOS.pdf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

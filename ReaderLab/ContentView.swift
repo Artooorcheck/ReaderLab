@@ -33,7 +33,7 @@ struct ContentView: View {
                     .ignoresSafeArea()
             )
             .frame(maxHeight: .infinity, alignment: .top)
-            .opacity(scrollAddField > .height(20) ? 1 : 0)
+            .opacity(scrollAddField > .height(15) ? 1 : 0)
             .animation(.linear, value: scrollAddField)
             HStack(spacing: 30) {
                 TabBarView()
@@ -105,7 +105,7 @@ struct ContentView: View {
                         }
                         try? fileManager.copyItem(at: url, to: destURL)
                         DispatchQueue.main.async {
-                            vm.addFile(url: destURL)
+                            vm.selectFile(url: destURL)
                         }
                         
                     }

@@ -29,7 +29,7 @@ struct FilePickerView: UIViewControllerRepresentable {
             }
 
             DispatchQueue.global().async{ [weak self] in
-                self?.parent.vm.addFile(url: selectedURL, openBook: true)
+                self?.parent.vm.selectFile(url: selectedURL, openBook: true)
             }
         }
 

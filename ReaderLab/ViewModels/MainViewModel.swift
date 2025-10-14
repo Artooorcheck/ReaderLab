@@ -53,7 +53,7 @@ class MainViewModel: ObservableObject {
     }
     
     func load(){
-        let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
+        let cachesDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         DispatchQueue.global().async { [weak self] in
             let result = try? self?.dbManager.get(limit: .max).map { book in
                 print("\(book.id): \(book.favorite) \(book.status)")
@@ -114,12 +114,21 @@ class MainViewModel: ObservableObject {
             }
         }
     }
-
+    
     func generatePDFThumbnail(from url: URL, size: CGSize) -> UIImage? {
         guard let document = PDFDocument(url: url),
               let page = document.page(at: 0) else {
             return nil
         }
+
+        let pageRect = page.bounds(for: .mediaBox)
+        let pdfScale = min(size.width / pageRect.width, size.height / pageRect.height)
+
+        let scaledWidth = pageRect.width * pdfScale
+        let scaledHeight = pageRect.height * pdfScale
+
+        let xOffset = (size.width - scaledWidth) / 2.0
+        let yOffset = (size.height - scaledHeight) / 2.0
 
         let rendererFormat = UIGraphicsImageRendererFormat.default()
         rendererFormat.scale = UIScreen.main.scale
@@ -129,46 +138,18 @@ class MainViewModel: ObservableObject {
             UIColor.white.set()
             ctx.fill(CGRect(origin: .zero, size: size))
 
+            ctx.cgContext.saveGState()
+            ctx.cgContext.translateBy(x: xOffset, y: yOffset)
+            ctx.cgContext.scaleBy(x: pdfScale, y: pdfScale)
+
             page.draw(with: .mediaBox, to: ctx.cgContext)
+
+            ctx.cgContext.restoreGState()
         }
 
         return img
     }
-    
-    func downloadIfNeeded(url: URL, completion: @escaping (URL?) -> Void) {
-        if FileManager.default.isUbiquitousItem(at: url) {
-            print("Файл находится в iCloud, проверка доступности...")
 
-            let coordinator = NSFileCoordinator()
-            var error: NSError?
-            coordinator.coordinate(readingItemAt: url, options: [], error: &error) { (newURL) in
-                if FileManager.default.fileExists(atPath: newURL.path) {
-                    completion(newURL)
-                } else {
-                    print("Файл не существует после координации")
-                    completion(nil)
-                }
-            }
-
-            if let error = error {
-                print("Ошибка координации файла:", error)
-                completion(nil)
-            }
-        } else {
-            print("Файл уже локален")
-            completion(url)
-        }
-    }
-    
-    func addFile(url: URL, openBook: Bool = false) {
-        self.downloadIfNeeded(url: url) { localURL in
-            guard let localURL = localURL else {
-                print("Не удалось загрузить файл локально")
-                return
-            }
-            self.fileSelected(url: localURL, openBook: openBook)
-        }
-    }
     
     func selectLastBook() {
         let book = self.books.sorted(by: { b1, b2 in
@@ -180,15 +161,16 @@ class MainViewModel: ObservableObject {
         }
     }
     
-    func fileSelected(url: URL, openBook: Bool = false) {
+    func selectFile(url: URL, openBook: Bool = false) {
         let fileName = url.lastPathComponent
         
         var book = BookModel(id: -1, title: fileName, date: Date(), favorite: false, status: 0, image: self.generatePDFThumbnail(from: url, size: CGSize(width: 150, height: 150)), path: url)
         
         book.id = try! self.dbManager.save(book: book)
 
-        let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
-        let destinationURL = cachesDirectory.appendingPathComponent("\(book.id).pdf")
+        let userDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let destinationURL = userDirectory.appendingPathComponent("\(book.id).pdf")
+        book.path = destinationURL
 
         do {
             if FileManager.default.fileExists(atPath: destinationURL.path) {
@@ -196,7 +178,6 @@ class MainViewModel: ObservableObject {
             }
 
             try FileManager.default.copyItem(at: url, to: destinationURL)
-            print("Файл скопирован в кэш:", destinationURL.path)
 
             DispatchQueue.main.async {
                 self.addBook = false
@@ -206,7 +187,6 @@ class MainViewModel: ObservableObject {
                     if(openBook) {
                         self.selectedBook = book
                     }
-                    print("Файл \(url.path) в Кэше")
                 }
             }
 
